@@ -1,38 +1,460 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Campus Club Members</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
 </head>
 
 <body>
 
-    <h1>Campus Club Member Management</h1>
+<div class="container mt-4">
 
-    <form action="/members" method="POST">
+    <h1 class="text-center mb-4">Campus Club Members</h1>
 
-        <label>Member ID:</label>
-        <input type="text" name="memberId" required>
-        <br><br>
 
-        <label>Name:</label>
-        <input type="text" name="name" required>
-        <br><br>
+    <!-- 4. ADD MEMBER -->
+    <div class="card p-3 mb-4">
 
-        <label>Department:</label>
-        <input type="text" name="department" required>
-        <br><br>
+        <h3>Add Club Member</h3>
 
-        <label>Year:</label>
-        <input type="number" name="year" required>
-        <br><br>
+        <form id="addForm">
 
-        <label>Club:</label>
-        <input type="text" name="club" required>
-        <br><br>
+            <input class="form-control mb-2"
+                id="memberId"
+                placeholder="Member ID"
+                required>
 
-        <button type="submit">Add Member</button>
+            <input class="form-control mb-2"
+                id="name"
+                placeholder="Name"
+                required>
 
-    </form>
+            <input class="form-control mb-2"
+                id="clubName"
+                placeholder="Club Name"
+                required>
+
+            <input class="form-control mb-2"
+                id="yearOfStudy"
+                type="number"
+                placeholder="Year of Study"
+                required>
+
+            <input class="form-control mb-2"
+                id="role"
+                placeholder="Role"
+                required>
+
+            <input class="form-control mb-2"
+                id="points"
+                type="number"
+                placeholder="Points"
+                required>
+
+            <input class="form-control mb-2"
+                id="interests"
+                placeholder="Interests"
+                required>
+
+            <select class="form-control mb-2" id="status">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+
+            <button class="btn btn-primary">
+                Add Member
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- 5. CLUB + POINTS -->
+    <div class="card p-3 mb-4">
+
+        <h3>Search Club Members</h3>
+
+        <input class="form-control mb-2"
+            id="searchClub"
+            placeholder="Club Name">
+
+        <input class="form-control mb-2"
+            id="clubPoints"
+            type="number"
+            placeholder="Minimum Points">
+
+        <button class="btn btn-success"
+            onclick="searchClub()">
+            Search
+        </button>
+
+    </div>
+
+
+    <!-- 6 & 7. SEARCH MEMBER -->
+    <div class="card p-3 mb-4">
+
+        <h3>Search Member by ID</h3>
+
+        <input class="form-control mb-2"
+            id="searchId"
+            placeholder="Member ID">
+
+        <button class="btn btn-info"
+            onclick="searchMember()">
+            Search Member
+        </button>
+
+    </div>
+
+
+    <!-- 8. UPDATE -->
+    <div class="card p-3 mb-4">
+
+        <h3>Update Member</h3>
+
+        <input class="form-control mb-2"
+            id="updateId"
+            placeholder="Member ID">
+
+        <input class="form-control mb-2"
+            id="updateRole"
+            placeholder="New Role">
+
+        <input class="form-control mb-2"
+            id="updatePoints"
+            type="number"
+            placeholder="New Points">
+
+        <button class="btn btn-warning"
+            onclick="updateMember()">
+            Update Member
+        </button>
+
+    </div>
+
+
+    <!-- 9. INCREASE CLUB POINTS -->
+    <div class="card p-3 mb-4">
+
+        <h3>Increase Club Points</h3>
+
+        <input class="form-control mb-2"
+            id="increaseClub"
+            placeholder="Club Name">
+
+        <input class="form-control mb-2"
+            id="increasePoints"
+            type="number"
+            placeholder="Points to Add">
+
+        <button class="btn btn-secondary"
+            onclick="increasePoints()">
+            Increase Points
+        </button>
+
+    </div>
+
+
+    <!-- 10. POINT RANGE -->
+    <div class="card p-3 mb-4">
+
+        <h3>Search by Points Range</h3>
+
+        <input class="form-control mb-2"
+            id="minPoints"
+            type="number"
+            placeholder="Minimum Points">
+
+        <input class="form-control mb-2"
+            id="maxPoints"
+            type="number"
+            placeholder="Maximum Points">
+
+        <button class="btn btn-dark"
+            onclick="searchRange()">
+            Search Range
+        </button>
+
+    </div>
+
+
+    <!-- 11. DELETE -->
+    <div class="card p-3 mb-4">
+
+        <h3>Delete Member</h3>
+
+        <input class="form-control mb-2"
+            id="deleteId"
+            placeholder="Member ID">
+
+        <button class="btn btn-danger"
+            onclick="deleteMember()">
+            Delete Member
+        </button>
+
+    </div>
+
+
+    <!-- 12. DISPLAY ALL -->
+    <div class="card p-3 mb-4">
+
+        <h3>All Members</h3>
+
+        <button class="btn btn-primary mb-3"
+            onclick="loadMembers()">
+            Display All Members
+        </button>
+
+        <div id="output"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // DISPLAY DATA
+    function display(data) {
+
+        document.getElementById("output").innerHTML =
+            "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+
+    }
+
+
+    // 4. ADD MEMBER
+    document.getElementById("addForm").addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const member = {
+
+            memberId: document.getElementById("memberId").value,
+
+            name: document.getElementById("name").value,
+
+            clubName: document.getElementById("clubName").value,
+
+            yearOfStudy: Number(
+                document.getElementById("yearOfStudy").value
+            ),
+
+            role: document.getElementById("role").value,
+
+            points: Number(
+                document.getElementById("points").value
+            ),
+
+            interests: document.getElementById("interests").value,
+
+            status: document.getElementById("status").value
+        };
+
+
+        const response = await fetch("/members", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(member)
+
+        });
+
+
+        const data = await response.json();
+
+        display(data);
+
+        document.getElementById("addForm").reset();
+
+    });
+
+
+    // 5. SEARCH CLUB
+    async function searchClub() {
+
+        const club =
+            document.getElementById("searchClub").value;
+
+        const points =
+            document.getElementById("clubPoints").value;
+
+
+        const response =
+            await fetch(
+                `/members/club/${club}?minPoints=${points}`
+            );
+
+
+        const data = await response.json();
+
+        display(data);
+
+    }
+
+
+    // 6 & 7. SEARCH MEMBER
+    async function searchMember() {
+
+        const id =
+            document.getElementById("searchId").value;
+
+
+        const response =
+            await fetch(`/members/search/${id}`);
+
+
+        const data = await response.json();
+
+        display(data);
+
+    }
+
+
+    // 8. UPDATE MEMBER
+    async function updateMember() {
+
+        const id =
+            document.getElementById("updateId").value;
+
+        const role =
+            document.getElementById("updateRole").value;
+
+        const points =
+            document.getElementById("updatePoints").value;
+
+
+        const response =
+            await fetch(`/members/${id}`, {
+
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    role: role,
+                    points: points
+                })
+
+            });
+
+
+        const data = await response.json();
+
+        display(data);
+
+    }
+
+
+    // 9. INCREASE CLUB POINTS
+    async function increasePoints() {
+
+        const club =
+            document.getElementById("increaseClub").value;
+
+        const points =
+            document.getElementById("increasePoints").value;
+
+
+        const response =
+            await fetch(
+                `/members/club/${club}/increase`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        points: points
+                    })
+
+                }
+            );
+
+
+        const data = await response.json();
+
+        display(data);
+
+    }
+
+
+    // 10. POINT RANGE
+    async function searchRange() {
+
+        const min =
+            document.getElementById("minPoints").value;
+
+        const max =
+            document.getElementById("maxPoints").value;
+
+
+        const response =
+            await fetch(
+                `/members/range?min=${min}&max=${max}`
+            );
+
+
+        const data = await response.json();
+
+        display(data);
+
+    }
+
+
+    // 11. DELETE MEMBER
+    async function deleteMember() {
+
+        const id =
+            document.getElementById("deleteId").value;
+
+
+        const response =
+            await fetch(`/members/${id}`, {
+
+                method: "DELETE"
+
+            });
+
+
+        const data = await response.json();
+
+        display(data);
+
+    }
+
+
+    // 12. DISPLAY ALL MEMBERS
+    async function loadMembers() {
+
+        const response =
+            await fetch("/members");
+
+
+        const data = await response.json();
+
+        display(data);
+
+    }
+
+</script>
 
 </body>
 </html>
